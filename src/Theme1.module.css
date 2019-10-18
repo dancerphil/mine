@@ -1,0 +1,45 @@
+.cover {
+    background-color: #eee;
+    box-shadow: -1px -1px 1px #ccc inset;
+}
+
+.reveal {
+    background-color: #fff;
+    box-shadow: 1px 1px 1px #ccc inset;
+}
+
+.mine {
+    background-color: #f44;
+}
+
+.mark {
+    color: #d66;
+}
+
+.label0 {
+    background-color: #ddd;
+}
+
+.label1 {
+    background-color: #66d;
+}
+
+.label2 {
+    background-color: #6d6;
+}
+
+.label3 {
+    background-color: #d66;
+}
+
+.label4 {
+    background-color: #448;
+}
+
+.label5 {
+    background-color: #844;
+}
+
+.label6, .label7, .label8 {
+    background-color: #333;
+}
