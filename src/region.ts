@@ -8,6 +8,8 @@ interface BlockMap {
 
 export const blockMap: BlockMap = {};
 
+let start = false;
+
 const getXY = (i: number) => {
     return [i % 10, Math.floor(i / 10)]
 }
@@ -40,7 +42,11 @@ const createBlock = (i: number) => {
     }
 }
 
-const fillMatrix = () => {
+const fillMap = () => {
+    Object.values(blockMap).forEach((block) => {
+        block.mine = false
+    })
+
     let mineCount = 0;
     while (mineCount < 150) {
         const i = Math.floor(Math.random() * 1000)
@@ -52,23 +58,32 @@ const fillMatrix = () => {
             mineCount ++;
         }
     }
+
     Object.values(blockMap).forEach((block) => {
         const blocks = getSurroundingBlocks(block);
         block.label = sumBy(blocks, 'mine')
     })
 }
 
-const resetMatrix = () => {
+const resetMap = () => {
     for (let i = 0; i < 1000; i++) {
         const block = createBlock(i)
         blockMap[block.id] = block;
     }
-    rerender()
 }
 
-resetMatrix();
-// 事实应该延后
-fillMatrix();
+resetMap();
+
+const handleValidFillMap = (block: Block) => {
+    fillMap();
+    let c = 0
+    while (c++ < 100) {
+        fillMap();
+        if (!block.mine && block.label === 0) {
+            return
+        }
+    }
+}
 
 const handleFail = () => {
     Object.values(blockMap).forEach(block => {
@@ -109,6 +124,10 @@ const handleSmart = (block: Block) => {
 }
 
 export const handleBlockClick = (block: Block) => {
+    if (!start){
+        handleValidFillMap(block);
+        start = true
+    }
     const {reveal} = block
     if (reveal) {
         handleSmart(block);
