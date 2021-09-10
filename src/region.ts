@@ -121,7 +121,6 @@ const handleSmart = (block: Block) => {
 }
 
 export const handleBlockClick = (block: Block) => {
-    console.log('click');
     if (!start){
         fillMapUntilValid(block);
         start = true
