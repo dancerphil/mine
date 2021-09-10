@@ -54,10 +54,9 @@ const resetMap = () => {
 resetMap();
 
 const fillMap = () => {
-    // x, y mine = false
-    // Object.values(blockMap).forEach((block) => {
-    //     block.mine = false
-    // })
+    getBlockList().forEach((block) => {
+        block.mine = false;
+    })
 
     let mineCount = 0;
     while (mineCount < 150) {
@@ -122,6 +121,7 @@ const handleSmart = (block: Block) => {
 }
 
 export const handleBlockClick = (block: Block) => {
+    console.log('click');
     if (!start){
         fillMapUntilValid(block);
         start = true

@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import useWindowWidth from './useWindowWidth';
 import {getBlockList, handleBlockMove} from './region';
 import {useRender} from './renderer';
@@ -14,15 +14,36 @@ const App = () => {
   const size = containerStyle.width / 10
   const blockStyle = {width: size, height: size};
 
-  const handleMouseMove = useCallback(
-      (e) => {
-          if (e.buttons) {
+  useEffect(
+      () => {
+          const handler = (e: any) => {
               const element = ref.current as HTMLDivElement;
               const mouseX = e.pageX - element.offsetLeft
               const mouseY = e.pageY - element.offsetTop
               const x = Math.floor(mouseX / size)
               const y = Math.floor(mouseY / size)
               handleBlockMove(x, y);
+          }
+
+          const handleTouchMove = (e: TouchEvent) => {
+              e.preventDefault()
+              handler(e)
+          }
+
+          const handleMouseMove = (e: MouseEvent) => {
+              if (e.buttons) {
+                  handler(e)
+              }
+          }
+
+          document.body.addEventListener('touchmove', handleTouchMove, {passive: false})
+
+          const element = ref.current as HTMLDivElement;
+          element.addEventListener('mousemove', handleMouseMove)
+
+          return () => {
+              document.body.removeEventListener('touchmove', handleTouchMove);
+              element.removeEventListener('mousemove', handleMouseMove)
           }
       },
       [size]
@@ -33,7 +54,6 @@ const App = () => {
           className={styles.container}
           style={containerStyle}
           ref={ref}
-          onMouseMove={handleMouseMove}
       >
         {getBlockList().map((block: BlockType) => {
           const {x, y} = block
