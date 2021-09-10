@@ -1,17 +1,7 @@
-type Listener = () => void;
+import {createRegion} from 'region-core';
 
-const createRenderer = () => {
-    const listeners: Listener[] = [];
-    const rerender = () => {
-        listeners.forEach(listener => listener());
-    }
-    const subscribe = (listener: Listener) => {
-        listeners.push(listener);
-        return () => {
-            listeners.splice(listeners.indexOf(listener), 1);
-        }
-    }
-    return {rerender, subscribe};
-}
+const region = createRegion<number>(0)
 
-export const {rerender, subscribe} = createRenderer()
+export const rerender = () => region.set(v => v+1);
+
+export const useRender = region.useValue;
