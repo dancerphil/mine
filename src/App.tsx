@@ -16,23 +16,26 @@ const App = () => {
 
     useEffect(
         () => {
-            const handler = (e: any) => {
+            const handleTouchMove = (e: TouchEvent) => {
+                e.preventDefault()
                 const element = ref.current as HTMLDivElement;
-                const mouseX = e.pageX - element.offsetLeft
-                const mouseY = e.pageY - element.offsetTop
+                const rect = element.getBoundingClientRect()
+                const mouseX = e.touches[0].clientX - rect.left + element.scrollLeft
+                const mouseY = e.touches[0].clientY - rect.top + element.scrollTop
                 const x = Math.floor(mouseX / size)
                 const y = Math.floor(mouseY / size)
                 handleBlockMove(x, y);
             }
 
-            const handleTouchMove = (e: TouchEvent) => {
-                e.preventDefault()
-                handler(e)
-            }
-
             const handleMouseMove = (e: MouseEvent) => {
                 if (e.buttons) {
-                    handler(e)
+                    const element = ref.current as HTMLDivElement;
+                    const rect = element.getBoundingClientRect()
+                    const mouseX = e.clientX - rect.left + element.scrollLeft
+                    const mouseY = e.clientY - rect.top + element.scrollTop
+                    const x = Math.floor(mouseX / size)
+                    const y = Math.floor(mouseY / size)
+                    handleBlockMove(x, y);
                 }
             }
 
@@ -52,7 +55,7 @@ const App = () => {
     const handlePrev = useCallback(
         () => {
             const element = ref.current as HTMLDivElement;
-            element.scrollBy(0, -windowHeight * 0.8)
+            element.scrollBy(0, -windowHeight * 0.5)
         },
         [windowHeight]
     )
@@ -60,7 +63,7 @@ const App = () => {
     const handleNext = useCallback(
         () => {
             const element = ref.current as HTMLDivElement;
-            element.scrollBy(0, windowHeight * 0.8)
+            element.scrollBy(0, windowHeight * 0.5)
         },
         [windowHeight]
     )
