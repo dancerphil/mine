@@ -1,8 +1,8 @@
 import {sumBy} from 'lodash';
 import {rerender} from './renderer';
 import {getBlock, setBlock, getBlockList, getSurroundingBlocks} from './region';
-import {Block} from './types';
-import {mineNumber, xNumber, yNumber} from "./constant";
+import {Block, Coordinate} from './types';
+import {intelligenceLevel, mineNumber, xNumber, yNumber} from "./constant";
 import {xyList} from "./utils";
 
 let start = false;
@@ -64,11 +64,10 @@ const handleReveal = (block: Block) => {
     }
     block.reveal = true;
     if (block.mine) {
-        console.error('失败');
         getBlockList().forEach(block => {
             block.reveal = true;
         });
-        return;
+        throw new Error('失败');
     }
     const {label} = block;
     if (label === 0) {
@@ -84,13 +83,25 @@ const handleSmart = (block: Block) => {
         blocks.filter(b => !b.reveal).forEach(handleMark);
         return;
     }
-    // 如果 mark 的 block 数量正好，则把未打开的置为 reveal
-    if (sumBy(blocks, (block) => block.mark ? 1 : 0) === block.label) {
-        blocks.filter(b => !b.mark).forEach(handleReveal);
+
+    if (intelligenceLevel >= 1) {
+        // 如果 mark 的 block 数量正好，则把未打开的置为 reveal
+        if (sumBy(blocks, (block) => block.mark ? 1 : 0) === block.label) {
+            blocks.filter(b => !b.mark).forEach(handleReveal);
+        }
     }
 };
 
-export const handleBlockClick = (block?: Block) => {
+const handleSmartRoot = (block: Block) => {
+    handleSmart(block);
+
+    if (intelligenceLevel >= 3) {
+        getSurroundingBlocks(block).filter(block => block.reveal).forEach(handleSmart);
+    }
+};
+
+export const handleBlockClick = (coordinate: Coordinate) => {
+    const block = getBlock(coordinate);
     if (!block){
         return;
     }
@@ -100,16 +111,21 @@ export const handleBlockClick = (block?: Block) => {
     }
     const {reveal} = block;
     if (reveal) {
-        handleSmart(block);
+        handleSmartRoot(block);
     } else {
         handleReveal(block);
+        if (intelligenceLevel >= 2) {
+            handleSmartRoot(block);
+        }
     }
-    rerender();
 };
 
-export const handleBlockMove = (x: number, y: number) => {
-    const block = getBlock({x, y});
-    if (block) {
-        handleBlockClick(block);
+export const handleBlockClickWithCatch = (coordinate: Coordinate) => {
+    try {
+        handleBlockClick(coordinate);
+    } catch (e) {
+        console.error(e);
+    } finally {
+        rerender();
     }
 };

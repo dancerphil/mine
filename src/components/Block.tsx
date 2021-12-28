@@ -3,7 +3,6 @@ import cx from 'classnames';
 import styles from './Block.module.css';
 import theme from './Theme2.module.css';
 import {useBlock} from "../region";
-import {handleBlockClick} from "../handlers";
 import {blockStyle as style} from '../constant';
 import {Coordinate} from "../types";
 
@@ -20,8 +19,6 @@ const Block = ({coordinate}: Props) => {
 
     const {mine, reveal, mark, label} = block;
 
-    const handleClick = () => handleBlockClick(block);
-
     if (!reveal) {
         const className = cx(
             styles.block,
@@ -34,7 +31,6 @@ const Block = ({coordinate}: Props) => {
             <div
                 className={className}
                 style={style}
-                onClick={handleClick}
             >
                 {mark && 'm'}
             </div>
@@ -52,7 +48,6 @@ const Block = ({coordinate}: Props) => {
         <div
             className={className}
             style={style}
-            onClick={handleClick}
         >
             {mine ? '!' :  label}
         </div>

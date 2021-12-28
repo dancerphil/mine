@@ -1,53 +1,16 @@
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useCallback, useRef} from 'react';
 import {getBlockList} from '../region';
-import {handleBlockMove} from '../handlers';
 import {useRender} from '../renderer';
 import Block from './Block';
 import c from './App.module.css';
-import {size, containerStyle, windowHeight} from '../constant';
+import {containerStyle, windowHeight} from '../constant';
 import {xyList} from '../utils';
+import useEventListener from './useEventListener';
 
 const App = () => {
     useRender();
     const ref = useRef<HTMLDivElement>(null);
-
-    useEffect(
-        () => {
-            const handleTouchMove = (e: TouchEvent) => {
-                e.preventDefault();
-                const element = ref.current as HTMLDivElement;
-                const rect = element.getBoundingClientRect();
-                const mouseX = e.touches[0].clientX - rect.left + element.scrollLeft;
-                const mouseY = e.touches[0].clientY - rect.top + element.scrollTop;
-                const x = Math.floor(mouseX / size);
-                const y = Math.floor(mouseY / size);
-                handleBlockMove(x, y);
-            };
-
-            const handleMouseMove = (e: MouseEvent) => {
-                if (e.buttons) {
-                    const element = ref.current as HTMLDivElement;
-                    const rect = element.getBoundingClientRect();
-                    const mouseX = e.clientX - rect.left + element.scrollLeft;
-                    const mouseY = e.clientY - rect.top + element.scrollTop;
-                    const x = Math.floor(mouseX / size);
-                    const y = Math.floor(mouseY / size);
-                    handleBlockMove(x, y);
-                }
-            };
-
-            document.body.addEventListener('touchmove', handleTouchMove, {passive: false});
-
-            const element = ref.current as HTMLDivElement;
-            element.addEventListener('mousemove', handleMouseMove);
-
-            return () => {
-                document.body.removeEventListener('touchmove', handleTouchMove);
-                element.removeEventListener('mousemove', handleMouseMove);
-            };
-        },
-        []
-    );
+    useEventListener(ref);
 
     const handlePrev = useCallback(
         () => {
