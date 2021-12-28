@@ -1,3 +1,8 @@
+export interface Coordinate {
+    x: number;
+    y: number;
+}
+
 export interface Block {
     x: number;
     y: number;

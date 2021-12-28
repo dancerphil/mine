@@ -1,6 +1,6 @@
 import {createRegion} from 'region-core';
 
-const region = createRegion<number>(0)
+const region = createRegion<number>(0);
 
 export const rerender = () => region.set(v => v + 1);
 

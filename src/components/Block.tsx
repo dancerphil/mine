@@ -1,21 +1,27 @@
-import React, {CSSProperties, useCallback} from 'react';
+import React from 'react';
 import cx from 'classnames';
-import {Block as BlockType} from './types';
 import styles from './Block.module.css';
 import theme from './Theme2.module.css';
-import {handleBlockClick} from "./region";
+import {useBlock} from "../region";
+import {handleBlockClick} from "../handlers";
+import {blockStyle as style} from '../constant';
+import {Coordinate} from "../types";
 
 interface Props {
-    block: BlockType
-    style: CSSProperties
+    coordinate: Coordinate
 }
 
-const Block = ({block, style}: Props) => {
+const Block = ({coordinate}: Props) => {
+    const block = useBlock(coordinate);
+
+    if (!block) {
+        return null;
+    }
+
     const {mine, reveal, mark, label} = block;
-    const handleClick = useCallback(
-        () => handleBlockClick(block),
-        [block]
-    )
+
+    const handleClick = () => handleBlockClick(block);
+
     if (!reveal) {
         const className = cx(
             styles.block,
@@ -23,7 +29,7 @@ const Block = ({block, style}: Props) => {
             {
                 [theme.mark]: mark,
             }
-        )
+        );
         return (
             <div
                 className={className}
@@ -32,7 +38,7 @@ const Block = ({block, style}: Props) => {
             >
                 {mark && 'm'}
             </div>
-        )
+        );
     }
     const className = cx(
         styles.block,
@@ -41,7 +47,7 @@ const Block = ({block, style}: Props) => {
             [theme[`label${label}`]]: !mine,
             [theme.mine]: mine,
         }
-    )
+    );
     return (
         <div
             className={className}
@@ -50,7 +56,7 @@ const Block = ({block, style}: Props) => {
         >
             {mine ? '!' :  label}
         </div>
-    )
-}
+    );
+};
 
 export default Block;
