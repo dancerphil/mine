@@ -3,11 +3,11 @@ import {rerender} from './renderer';
 import {getBlock, setBlock, getBlockList, getSurroundingBlocks} from './region';
 import {Block, Coordinate} from './types';
 import {intelligenceLevel, mineNumber, xNumber, yNumber} from "./constant";
-import {xyList} from "./utils";
+import {xyList, applyDiff, computeSmartDiff, handleReveal} from "./utils";
 
 let start = false;
 
-const resetMap = () => {
+export const handleReset = () => {
     xyList.forEach(({x, y}) => {
         const block = {
             x,
@@ -19,9 +19,11 @@ const resetMap = () => {
         };
         setBlock({x, y}, block);
     });
+    start = false;
+    rerender();
 };
 
-resetMap();
+handleReset();
 
 const fillMap = () => {
     getBlockList().forEach((block) => {
@@ -54,49 +56,13 @@ const fillMapUntilValid = (block: Block) => {
     }
 };
 
-const handleMark = (block: Block) => {
-    block.mark = true;
-};
-
-const handleReveal = (block: Block) => {
-    if (block.reveal) {
-        return;
-    }
-    block.reveal = true;
-    if (block.mine) {
-        getBlockList().forEach(block => {
-            block.reveal = true;
-        });
-        throw new Error('失败');
-    }
-    const {label} = block;
-    if (label === 0) {
-        // 这是一个深搜
-        getSurroundingBlocks(block).forEach(handleReveal);
-    }
-};
-
-const handleSmart = (block: Block) => {
-    const blocks = getSurroundingBlocks(block);
-    // 如果 reveal 的 block 数量正好，则把未打开的置为 mark
-    if (sumBy(blocks, (block) => block.reveal ? 0 : 1) === block.label) {
-        blocks.filter(b => !b.reveal).forEach(handleMark);
-        return;
-    }
-
-    if (intelligenceLevel >= 1) {
-        // 如果 mark 的 block 数量正好，则把未打开的置为 reveal
-        if (sumBy(blocks, (block) => block.mark ? 1 : 0) === block.label) {
-            blocks.filter(b => !b.mark).forEach(handleReveal);
-        }
-    }
-};
-
 const handleSmartRoot = (block: Block) => {
-    handleSmart(block);
+    const diff = computeSmartDiff(block);
+    applyDiff(diff);
 
     if (intelligenceLevel >= 3) {
-        getSurroundingBlocks(block).filter(block => block.reveal).forEach(handleSmart);
+        const diffList = getSurroundingBlocks(block).filter(block => block.reveal).map(computeSmartDiff);
+        diffList.forEach(applyDiff);
     }
 };
 

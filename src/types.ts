@@ -11,3 +11,8 @@ export interface Block {
     mark: boolean;
     label: number;
 }
+
+export interface Diff {
+    mark?: Block[]
+    reveal?: Block[]
+}
