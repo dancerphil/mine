@@ -40,10 +40,12 @@ const withTouch = (handler: (e: Params) => void) => (e: TouchEvent) => {
     handler({clientX, clientY});
 };
 
-const withMouse = (handler: (e: Params) => void) => (e: MouseEvent) => {
-    if (e.buttons) {
-        const clientX = e.clientX;
-        const clientY = e.clientY;
+const withMouse = (handler: (e: Params) => void, checkButtons?: boolean) => (e: MouseEvent) => {
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+    if (checkButtons && !e.buttons) {
+        // nothing
+    } else {
         handler({clientX, clientY});
     }
 };
@@ -72,7 +74,7 @@ const useEventListener = (ref: RefObject<HTMLDivElement>) => {
             };
 
             const handleTouchMove = withTouch(handleMove);
-            const handleMouseMove = withMouse(handleMove);
+            const handleMouseMove = withMouse(handleMove, true);
 
             const handleEnd = ({clientX, clientY}: Params) => {
                 const coordinate = getCoordinate(element, clientX, clientY);
