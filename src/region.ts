@@ -22,3 +22,19 @@ export const getSurroundingBlocks = (block: Block) => {
     ];
     return compact(blockList);
 };
+
+const initBlock = () => {
+    xyList.forEach(({x, y}) => {
+        const block = {
+            x,
+            y,
+            mine: false,
+            reveal: false,
+            mark: false,
+            label: 0,
+        };
+        setBlock({x, y}, block);
+    });
+};
+
+initBlock();

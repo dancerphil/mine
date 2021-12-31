@@ -1,0 +1,5 @@
+.castRange {
+    position: absolute;
+    border: 1px solid #ffdd33;
+    pointer-events: none;
+}

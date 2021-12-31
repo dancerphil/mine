@@ -1,6 +1,5 @@
-
-export const windowWidth = window.outerWidth;
-export const windowHeight = window.outerHeight;
+export const windowWidth = window.innerWidth;
+export const windowHeight = window.innerHeight;
 
 export const xNumber = 20;
 export const size = Math.floor(windowWidth / xNumber);
@@ -12,3 +11,4 @@ export const intelligenceLevel = 3;
 
 export const panelStyle = {width: xNumber * size, height: yNumber * size};
 export const blockStyle = {width: size, height: size};
+export const castRangeStyle = {width: size * 3, height: size * 3};

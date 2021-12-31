@@ -7,6 +7,7 @@ import {handleReset} from '../handlers';
 import {panelStyle} from '../constant';
 import {xyList} from '../utils';
 import useEventListener from './useEventListener';
+import CastRange from "./CastRange";
 
 const App = () => {
     useRender();
@@ -17,7 +18,7 @@ const App = () => {
 
     return (
         <>
-            <div className={c.header} onTouchEnd={handleReset}>
+            <div className={c.header} onMouseUp={handleReset} onTouchEnd={handleReset}>
                 {blockList.filter(item => item.mine && !item.mark).length}
             </div>
             <div className={c.content}>
@@ -31,6 +32,7 @@ const App = () => {
                             <Block key={`${coordinate.x}-${coordinate.y}`} coordinate={coordinate} />
                         );
                     })}
+                    <CastRange />
                 </div>
             </div>
         </>

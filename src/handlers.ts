@@ -1,23 +1,16 @@
 import {sumBy} from 'lodash';
 import {rerender} from './renderer';
-import {getBlock, setBlock, getBlockList, getSurroundingBlocks} from './region';
+import {getBlock, getBlockList, getSurroundingBlocks} from './region';
 import {Block, Coordinate} from './types';
 import {intelligenceLevel, mineNumber, xNumber, yNumber} from "./constant";
-import {xyList, applyDiff, computeSmartDiff, handleReveal} from "./utils";
+import {applyDiff, combineDiff, computeSmartDiff, handleReveal} from "./utils";
 
 let start = false;
 
 export const handleReset = () => {
-    xyList.forEach(({x, y}) => {
-        const block = {
-            x,
-            y,
-            mine: false,
-            reveal: false,
-            mark: false,
-            label: 0,
-        };
-        setBlock({x, y}, block);
+    getBlockList().forEach((block) => {
+        block.reveal = false;
+        block.mark = false;
     });
     start = false;
     rerender();
@@ -59,11 +52,6 @@ const fillMapUntilValid = (block: Block) => {
 const handleSmartRoot = (block: Block) => {
     const diff = computeSmartDiff(block);
     applyDiff(diff);
-
-    if (intelligenceLevel >= 3) {
-        const diffList = getSurroundingBlocks(block).filter(block => block.reveal).map(computeSmartDiff);
-        diffList.forEach(applyDiff);
-    }
 };
 
 export const handleBlockClick = (coordinate: Coordinate) => {
@@ -83,6 +71,12 @@ export const handleBlockClick = (coordinate: Coordinate) => {
         if (intelligenceLevel >= 2) {
             handleSmartRoot(block);
         }
+    }
+
+    if (intelligenceLevel >= 3) {
+        const diffList = getSurroundingBlocks(block).filter(block => block.reveal).map(computeSmartDiff);
+        const diff = combineDiff(diffList);
+        applyDiff(diff);
     }
 };
 

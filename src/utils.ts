@@ -1,6 +1,6 @@
 import {Block, Coordinate, Diff} from "./types";
 import {getBlockList, getSurroundingBlocks} from "./region";
-import {sumBy} from "lodash";
+import {compact, sumBy} from "lodash";
 import {intelligenceLevel, xNumber, yNumber} from "./constant";
 
 export const xyList: Array<Coordinate> = [];
@@ -41,6 +41,12 @@ export const applyDiff = (diff: Diff) => {
     if(reveal) {
         reveal.forEach(handleReveal);
     }
+};
+
+export const combineDiff = (diffList: Diff[]) => {
+    const mark = compact(diffList.map(diff => diff.mark)).flat();
+    const reveal = compact(diffList.map(diff => diff.reveal)).flat();
+    return {mark, reveal};
 };
 
 export const computeSmartDiff = (block: Block): Diff => {
