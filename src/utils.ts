@@ -1,5 +1,5 @@
 import {Block, Coordinate, Diff} from "./types";
-import {getBlockList, getSurroundingBlocks} from "./region";
+import {getSurroundingBlocks} from "./region";
 import {compact, sumBy} from "lodash";
 import {intelligenceLevel, xNumber, yNumber} from "./constant";
 
@@ -21,9 +21,10 @@ export const handleReveal = (block: Block) => {
     }
     block.reveal = true;
     if (block.mine) {
-        getBlockList().forEach(block => {
-            block.reveal = true;
-        });
+        block.mark = true;
+        // getBlockList().forEach(block => {
+        //     block.reveal = true;
+        // });
         throw new Error('失败');
     }
     const {label} = block;
@@ -49,10 +50,25 @@ export const combineDiff = (diffList: Diff[]) => {
     return {mark, reveal};
 };
 
+const iterateeMaybeMine = (block: Block) => {
+    // 已知是雷
+    if (block.reveal && block.mine) {
+        return 1;
+    }
+    // 未打开
+    if (!block.reveal) {
+        return 1;
+    }
+    return 0;
+};
+
 export const computeSmartDiff = (block: Block): Diff => {
+    if (block.mine) {
+        return {};
+    }
     const blocks = getSurroundingBlocks(block);
-    // 如果 reveal 的 block 数量正好，则把未打开的置为 mark
-    if (sumBy(blocks, (block) => block.reveal ? 0 : 1) === block.label) {
+    // 如果未打开的 block 数量正好，则把未打开的置为 mark
+    if (sumBy(blocks, iterateeMaybeMine) === block.label) {
         return {
             mark: blocks.filter(b => !b.reveal)
         };
