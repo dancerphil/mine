@@ -59,6 +59,9 @@ export const handleBlockClick = (coordinate: Coordinate) => {
     if (!block){
         return;
     }
+    if (block.mark) {
+        return;
+    }
     if (!start){
         fillMapUntilValid(block);
         start = true;
