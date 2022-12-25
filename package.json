@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "http://dancerphil.github.io/mine",
-  "repository": "github:dancerphil/queue",
+  "repository": "github:dancerphil/mine",
   "license": "MIT",
   "author": "Cong Zhang <dancerphil1994@gmail.com>",
   "dependencies": {
